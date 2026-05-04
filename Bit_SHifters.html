@@ -16,6 +16,165 @@
     --border: rgba(255,255,255,0.09);
   }
 
+  /* ── LOADER ── */
+  #loader {
+    position:fixed; inset:0; z-index:99999;
+    background:#06040f;
+    display:flex; align-items:center; justify-content:center;
+    transition: opacity 1s ease, visibility 1s ease;
+    overflow:hidden;
+  }
+  #loader.hide { opacity:0; visibility:hidden; pointer-events:none; }
+
+  /* Animated grid bg inside loader */
+  #loader-grid {
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(rgba(124,108,252,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,108,252,0.07) 1px, transparent 1px);
+    background-size:48px 48px;
+    animation: gridSlide 6s linear infinite;
+  }
+  @keyframes gridSlide {
+    0%   { transform: perspective(600px) rotateX(20deg) translateY(0); }
+    100% { transform: perspective(600px) rotateX(20deg) translateY(48px); }
+  }
+
+  /* Big glowing orbs behind */
+  #loader-orb1 {
+    position:absolute; width:500px; height:500px; border-radius:50%;
+    background:radial-gradient(circle, rgba(124,108,252,0.18) 0%, transparent 70%);
+    top:-120px; right:-100px;
+    animation: orbPulse 3s ease infinite;
+  }
+  #loader-orb2 {
+    position:absolute; width:400px; height:400px; border-radius:50%;
+    background:radial-gradient(circle, rgba(244,114,182,0.14) 0%, transparent 70%);
+    bottom:-80px; left:-80px;
+    animation: orbPulse 3s ease 1.5s infinite;
+  }
+  @keyframes orbPulse {
+    0%,100% { transform:scale(1); opacity:1; }
+    50%     { transform:scale(1.15); opacity:0.7; }
+  }
+
+  /* Spinning rings */
+  #loader-rings {
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+  }
+  .lring {
+    position:absolute; border-radius:50%;
+    border:1px solid transparent;
+    border-top-color:var(--rc);
+    border-right-color:var(--rc);
+    animation: spin var(--spd) linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  #loader-inner {
+    position:relative; z-index:2;
+    display:flex; flex-direction:column; align-items:center; gap:32px;
+    animation: loaderUp 0.7s ease forwards;
+  }
+  @keyframes loaderUp {
+    from { opacity:0; transform:translateY(24px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* Logo with letter-by-letter animation */
+  #loader-logo {
+    font-family:'Syne',sans-serif;
+    font-size:clamp(32px,5.5vw,60px);
+    font-weight:900; letter-spacing:-0.03em;
+    display:flex; align-items:baseline; gap:3px;
+    position:relative;
+  }
+  .logo-char {
+    display:inline-block;
+    background:linear-gradient(120deg,#7c6cfc,#f472b6,#38bdf8);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
+    opacity:0; transform:translateY(20px);
+    animation:charUp 0.5s ease forwards;
+  }
+  @keyframes charUp {
+    to { opacity:1; transform:translateY(0); }
+  }
+  #loader-cursor {
+    -webkit-text-fill-color:#7c6cfc; color:#7c6cfc;
+    animation:lcblink 0.9s step-end infinite;
+    font-size:0.85em;
+  }
+  @keyframes lcblink { 50%{opacity:0;} }
+
+  /* Tagline typewriter */
+  #loader-tag {
+    font-family:'Space Mono',monospace;
+    font-size:12px; letter-spacing:0.2em; text-transform:uppercase;
+    color:rgba(255,255,255,0.35);
+    overflow:hidden; white-space:nowrap; width:0;
+    border-right:1.5px solid rgba(124,108,252,0.6);
+    animation: typeIn 1.2s steps(22) 0.8s forwards, caretBlink 0.7s step-end 2s infinite;
+  }
+  @keyframes typeIn { to { width:22ch; } }
+  @keyframes caretBlink { 50%{ border-color:transparent; } }
+
+  /* Progress section */
+  #loader-progress { display:flex; flex-direction:column; align-items:center; gap:12px; width:clamp(220px,30vw,360px); }
+  #loader-bar-wrap {
+    width:100%; height:2px;
+    background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden;
+    position:relative;
+  }
+  #loader-bar {
+    height:100%; width:0%;
+    background:linear-gradient(90deg,#7c6cfc,#f472b6,#38bdf8);
+    border-radius:2px; transition:width 0.4s cubic-bezier(0.4,0,0.2,1);
+    position:relative;
+  }
+  /* Shimmer on bar */
+  #loader-bar::after {
+    content:'';
+    position:absolute; top:0; right:0; bottom:0; width:40px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
+    animation:shimmer 1.2s ease infinite;
+  }
+  @keyframes shimmer { 0%{opacity:0;} 50%{opacity:1;} 100%{opacity:0;} }
+
+  #loader-pct {
+    font-family:'Space Mono',monospace; font-size:11px;
+    color:rgba(255,255,255,0.25); letter-spacing:0.1em;
+    align-self:flex-end;
+  }
+  #loader-status {
+    font-family:'Space Mono',monospace; font-size:10px;
+    color:rgba(255,255,255,0.28); letter-spacing:0.18em; text-transform:uppercase;
+    min-height:16px; transition:opacity 0.25s;
+    align-self:flex-start;
+  }
+
+  /* Floating data lines */
+  .data-line {
+    position:absolute;
+    font-family:'Space Mono',monospace; font-size:10px;
+    color:rgba(124,108,252,0.2); letter-spacing:0.05em;
+    white-space:nowrap; pointer-events:none;
+    animation:dataFloat linear infinite;
+  }
+  @keyframes dataFloat {
+    0%   { opacity:0; transform:translateY(0); }
+    10%  { opacity:1; }
+    90%  { opacity:1; }
+    100% { opacity:0; transform:translateY(-80px); }
+  }
+
+  /* Three.js loader canvas */
+  #loader-3d {
+    position:absolute; inset:0; z-index:1; pointer-events:none;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: auto; }
 
@@ -351,6 +510,32 @@
 </style>
 </head>
 <body>
+
+<!-- ── LOADER ── -->
+<div id="loader">
+  <div id="loader-grid"></div>
+  <div id="loader-orb1"></div>
+  <div id="loader-orb2"></div>
+  <div id="loader-rings">
+    <div class="lring" style="width:320px;height:320px;--rc:rgba(124,108,252,0.3);--spd:6s;"></div>
+    <div class="lring" style="width:240px;height:240px;--rc:rgba(244,114,182,0.25);--spd:4s;animation-direction:reverse;"></div>
+    <div class="lring" style="width:160px;height:160px;--rc:rgba(56,189,248,0.2);--spd:3s;"></div>
+  </div>
+  <canvas id="loader-3d"></canvas>
+  <div id="loader-inner">
+    <div id="loader-logo">
+      <span id="loader-bs"></span><span id="loader-cursor">_</span>
+    </div>
+    <div id="loader-tag">Project Vaulted 2026</div>
+    <div id="loader-progress">
+      <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+      <div style="display:flex;justify-content:space-between;width:100%;">
+        <div id="loader-status">Booting...</div>
+        <div id="loader-pct">0%</div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
@@ -796,6 +981,210 @@ document.querySelectorAll('a, .team-card, .tech-card, .stat-card, .update-item')
   el.addEventListener('mouseenter', () => { cur.style.transform = 'scale(2)'; curRing.style.transform = 'scale(1.5)'; curRing.style.opacity = '0.9'; });
   el.addEventListener('mouseleave', () => { cur.style.transform = 'scale(1)'; curRing.style.transform = 'scale(1)'; curRing.style.opacity = '0.5'; });
 });
+
+// ─────────────────────────────────────────────
+// LOADER SEQUENCE
+// ─────────────────────────────────────────────
+(function() {
+  const loader    = document.getElementById('loader');
+  const bar       = document.getElementById('loader-bar');
+  const status    = document.getElementById('loader-status');
+  const pctEl     = document.getElementById('loader-pct');
+  const logoEl    = document.getElementById('loader-bs');
+
+  // ── Three.js 3D shapes inside loader ──
+  const lCanvas = document.getElementById('loader-3d');
+  const lRenderer = new THREE.WebGLRenderer({ canvas: lCanvas, alpha: true, antialias: true });
+  lRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  lRenderer.setSize(window.innerWidth, window.innerHeight);
+  lRenderer.setClearColor(0x000000, 0);
+
+  const lScene = new THREE.Scene();
+  const lCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+  lCamera.position.set(0, 0, 9);
+
+  // Lights for loader scene
+  lScene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  const lp1 = new THREE.PointLight(0x7c6cfc, 6, 30); lp1.position.set(4, 4, 4); lScene.add(lp1);
+  const lp2 = new THREE.PointLight(0xf472b6, 5, 25); lp2.position.set(-4, -3, 3); lScene.add(lp2);
+  const lp3 = new THREE.PointLight(0x38bdf8, 4, 20); lp3.position.set(0, -4, 5); lScene.add(lp3);
+
+  const lMeshes = [];
+
+  function lMat(color, emissive) {
+    return new THREE.MeshStandardMaterial({
+      color, metalness: 0.8, roughness: 0.15,
+      emissive: emissive || color, emissiveIntensity: 0.15,
+      transparent: true, opacity: 0.85,
+    });
+  }
+
+  // Central icosahedron
+  const centerIco = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(1.1, 1),
+    new THREE.MeshStandardMaterial({ color: 0x0a0a1a, metalness: 0.95, roughness: 0.05, emissive: 0x2a1a6a, emissiveIntensity: 0.4 })
+  );
+  lScene.add(centerIco);
+
+  const centerWire = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(1.12, 1),
+    new THREE.MeshBasicMaterial({ color: 0x7c6cfc, wireframe: true, transparent: true, opacity: 0.25 })
+  );
+  lScene.add(centerWire);
+
+  // Floating cubes
+  const cubePositions = [
+    [-3.5, 1.8, -1], [3.2, -1.5, -2], [-2.8, -2.2, 0],
+    [3.8, 2.2, -1],  [-4.2, 0.5, -3], [2.5, -3, -1],
+  ];
+  const cubeColors = [0x7c6cfc, 0xf472b6, 0x38bdf8, 0xa78bfa, 0xe879f9, 0x06b6d4];
+  cubePositions.forEach(([x,y,z], i) => {
+    const size = 0.3 + Math.random() * 0.45;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), lMat(cubeColors[i]));
+    mesh.position.set(x, y, z);
+    mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+    lScene.add(mesh);
+    lMeshes.push({ mesh, rx: (Math.random()-0.5)*0.02, ry: (Math.random()-0.5)*0.02, floatAmp: 0.3+Math.random()*0.4, floatSpd: 0.5+Math.random()*0.8, floatOff: Math.random()*Math.PI*2, baseY: y });
+  });
+
+  // Floating spheres
+  const spherePositions = [
+    [-1.8, 3, -2], [1.5, 3.2, -1.5], [-3, -0.5, 1],
+    [3.5, 0.8, 0], [0.8, -3.2, 0],
+  ];
+  const sphereColors = [0xf472b6, 0x7c6cfc, 0x38bdf8, 0xe879f9, 0xa78bfa];
+  spherePositions.forEach(([x,y,z], i) => {
+    const r = 0.15 + Math.random() * 0.3;
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 20), lMat(sphereColors[i]));
+    mesh.position.set(x, y, z);
+    lScene.add(mesh);
+    lMeshes.push({ mesh, rx: 0, ry: (Math.random()-0.5)*0.015, floatAmp: 0.25+Math.random()*0.35, floatSpd: 0.4+Math.random()*0.6, floatOff: Math.random()*Math.PI*2, baseY: y });
+  });
+
+  // Floating torus
+  const torusMesh = new THREE.Mesh(
+    new THREE.TorusGeometry(0.55, 0.14, 16, 60),
+    lMat(0x38bdf8)
+  );
+  torusMesh.position.set(-1.2, -1.5, 1);
+  lScene.add(torusMesh);
+  lMeshes.push({ mesh: torusMesh, rx: 0.018, ry: 0.01, floatAmp: 0.3, floatSpd: 0.7, floatOff: 1.2, baseY: -1.5 });
+
+  // Small octahedron
+  const octMesh = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.4),
+    lMat(0xe879f9)
+  );
+  octMesh.position.set(1.8, 1.8, 1);
+  lScene.add(octMesh);
+  lMeshes.push({ mesh: octMesh, rx: 0.02, ry: 0.015, floatAmp: 0.25, floatSpd: 0.9, floatOff: 2.1, baseY: 1.8 });
+
+  // Loader animation loop
+  let lt = 0;
+  let loaderRunning = true;
+  function loaderAnimate() {
+    if (!loaderRunning) return;
+    requestAnimationFrame(loaderAnimate);
+    lt += 0.012;
+
+    // Rotate center
+    centerIco.rotation.x += 0.006;
+    centerIco.rotation.y += 0.009;
+    centerWire.rotation.copy(centerIco.rotation);
+
+    // Float + rotate all meshes
+    lMeshes.forEach(({ mesh, rx, ry, floatAmp, floatSpd, floatOff, baseY }) => {
+      mesh.rotation.x += rx;
+      mesh.rotation.y += ry;
+      mesh.position.y = baseY + Math.sin(lt * floatSpd + floatOff) * floatAmp;
+    });
+
+    // Pulse lights
+    lp1.intensity = 5 + Math.sin(lt * 1.8) * 2;
+    lp2.intensity = 4 + Math.cos(lt * 1.3) * 1.5;
+
+    lRenderer.render(lScene, lCamera);
+  }
+  loaderAnimate();
+
+  window.addEventListener('resize', () => {
+    lRenderer.setSize(window.innerWidth, window.innerHeight);
+    lCamera.aspect = window.innerWidth / window.innerHeight;
+    lCamera.updateProjectionMatrix();
+  });
+
+  // Letter-by-letter logo reveal
+  const word = 'Bit Shifters';
+  word.split('').forEach((ch, i) => {
+    const s = document.createElement('span');
+    s.className = 'logo-char';
+    s.textContent = ch === ' ' ? '\u00A0' : ch;
+    s.style.animationDelay = (0.06 * i) + 's';
+    logoEl.appendChild(s);
+  });
+
+  // Floating code lines
+  const snippets = [
+    'import anthropic', 'wake_word = "hey jarvis"',
+    'rpi.gpio.setup()', 'whisper.transcribe()',
+    'claude.messages.create()', 'elevenlabs.tts()',
+    'ws2812b.fill(GREEN)', 'python main.py',
+    'git push origin main', 'ssh pi@jarvis.local',
+  ];
+  function spawnLine() {
+    const el = document.createElement('div');
+    el.className = 'data-line';
+    el.textContent = snippets[Math.floor(Math.random() * snippets.length)];
+    el.style.left = (5 + Math.random() * 85) + '%';
+    el.style.bottom = '-20px';
+    const dur = 4 + Math.random() * 4;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = (Math.random() * 1.5) + 's';
+    loader.appendChild(el);
+    setTimeout(() => el.remove(), (dur + 2) * 1000);
+  }
+  for (let i = 0; i < 8; i++) setTimeout(spawnLine, i * 350);
+  const lineInterval = setInterval(spawnLine, 800);
+
+  const steps = [
+    { p: 10,  msg: 'Booting Raspberry Pi...'    },
+    { p: 26,  msg: 'Loading Three.js scene...'  },
+    { p: 44,  msg: 'Connecting Claude API...'   },
+    { p: 61,  msg: 'Calibrating wake word...'   },
+    { p: 77,  msg: 'Initializing ElevenLabs...' },
+    { p: 89,  msg: 'Powering up LEDs...'        },
+    { p: 100, msg: 'Welcome, Bit Shifters.'     },
+  ];
+
+  const colors = ['#7c6cfc','#f472b6','#38bdf8','#a78bfa','#e879f9'];
+  let step = 0;
+  let curPct = 0;
+
+  function animPct(target) {
+    if (curPct >= target) return;
+    curPct++;
+    if (pctEl) pctEl.textContent = curPct + '%';
+    if (curPct < target) setTimeout(() => animPct(target), 16);
+  }
+
+  function nextStep() {
+    if (step >= steps.length) return;
+    const s = steps[step++];
+    animPct(s.p);
+    bar.style.width = s.p + '%';
+    status.style.opacity = '0';
+    setTimeout(() => { status.textContent = s.msg; status.style.opacity = '1'; }, 180);
+    if (step < steps.length) {
+      setTimeout(nextStep, 400 + Math.random() * 220);
+    } else {
+      clearInterval(lineInterval);
+      loaderRunning = false;
+      setTimeout(() => loader.classList.add('hide'), 800);
+    }
+  }
+
+  setTimeout(nextStep, 500);
+})();
 </script>
 </body>
 </html>
